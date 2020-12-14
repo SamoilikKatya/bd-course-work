@@ -1,0 +1,382 @@
+<html>
+
+<head>
+  <title> Todo List</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- jQuery library-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.js"></script>
+  <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.css" rel="stylesheet" />
+
+  <script src="./javascripts/todoapp.js"></script>
+  <script>
+    $(function(){
+      //jQuery.datetimepicker.setLocale('hu');
+      $("#deadline-date").datetimepicker({
+        timepicker:false,
+        format:'Y.M.d',
+        weeks:true,
+        dayOfWeekStart:1,
+        minDate:0
+      });
+      $("#reminder-date").datetimepicker({
+        format:'Y.M.d',
+        step:5,
+        timepickerScrollbar:false,
+        weeks:true,
+        dayOfWeekStart:1,
+        minDate:0
+      });
+    });
+
+  </script>
+  <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link href="./stylesheets/todoapp.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div class="overflow-hidden">
+    <div class="main-container">
+      <section class="listside">
+        <div class="list-container">
+          <div id="search-toolbar" class="search-toolbar">
+            <span class="toogle-listside" style="button">
+              <a href="/">Log out</a>
+              <!--<img id="logout" class="toogle-listside-icon" src="/images/menu30.png" />-->
+            </span>
+            <!--<input type="text" class="search-input">
+            <span class="search-icon-container" style="button">
+              <img class="search-icon" src="/images/search26.png" />
+            </span>-->
+          </div>
+          <div id="user-toolbar" class="user-toolbar">
+            <div id="userShow-container">
+              <span class="user-icon-container">
+                <img class="user-icon" src="/images/name50.png" />
+              </span><span class="user-name"><%= user.name %></span>
+              <input type="hidden" class="user-id" id="user-id" value="<%= user.id %>">
+            </div>
+            <div id="userOptions-container" class="display-none">
+              <p id="changephoto">Change your photo</p>
+            </div>
+          </div>
+          <div id="personal-list-wrapper">
+            <div id="personal-list">
+              <div class="list-filters">
+                <div id="dateAllTaskfilter-container">
+                  <ul class="list-filters-ul">
+                    <li role="menuitem" class="list-items-li">
+                      <a class="list-items" href="#lists/allList" tabindex="0" id="allTaskFilter">
+                        <span class="list-icon-container"><img class="list-icon" src="/images/alltask.png" /></span>
+                        <span class="list-name">All tasks</span>
+                      </a>
+                    </li>
+                    <li role="menuitem" class="list-items-li" id="datetimefilter-wrapper">
+                      <a class="filter-items" href="#lists/allList" tabindex="1" id="dateTimeTaskFilter">
+                        <span class="list-icon-container"><img class="list-icon" src="/images/calendar/filterDate.png" /></span>
+                        <span class="list-name">Filter by Date and Time </span>
+                      </a>
+                      <div id="datetimefilter-container" class="display-none">
+                        <ul id="date-filters-ul">
+                          <% const today= (new Date(Date.now())).getDate();%>
+                          <li role="menuitem" class="list-items-li display-none">
+                            <a class="list-items" href="#lists/expired" tabindex="2" id="expiredTaskFilter">
+                              <span class="list-icon-container"><img class="list-icon" src="/images/calendar/expired.png" /></span>
+                              <span class="list-name">Expired date</span>
+                              <span class="list-taskcount"></span></a>
+                          </li>
+                          <li role="menuitem" class="list-items-li display-none">
+                            <a class="list-items" href="#lists/yesterday" tabindex="3" id="yesterdayTaskFilter">
+                              <span class="list-icon-container"><img class="list-icon" src="/images/calendar/day<%= today-1%>.png" /></span>
+                              <span class="list-name">Yesterday</span>
+                              <span class="list-taskcount"></span></a>
+                          </li>
+                          <li role="menuitem" class="list-items-li display-none">
+                            <a class="list-items" href="#lists/today" tabindex="4" id="todayTaskFilter">
+                              <span class="list-icon-container"><img class="list-icon" src="/images/calendar/day<%= today%>.png" /></span>
+                              <span class="list-name">Today</span>
+                              <span class="list-taskcount"></span></a>
+                          </li>
+                          <li role="menuitem" class="list-items-li display-none">
+                            <a class="list-items" href="#lists/tomorrow" tabindex="5" id="tomorrowTaskFilter">
+                              <span class="list-icon-container"><img class="list-icon" src="/images/calendar/day<%= today+1 %>.png" /></span>
+                              <span class="list-name">Tomorrow</span>
+                              <span class="list-taskcount"></span></a>
+                          </li>
+                          <li role="menuitem" class="list-items-li display-none">
+                            <a class="list-items" href="#lists/week" tabindex="6" id="weekTaskFilter">
+                              <span class="list-icon-container"><img class="list-icon" src="/images/calendar/week.png" /></span>
+                              <span class="list-name">This week</span>
+                              <span class="list-taskcount"></span></a>
+                          </li>
+                          <li role="menuitem" class="list-items-li display-none">
+                            <a class="list-items" href="#lists/month" tabindex="7" id="monthTaskFilter">
+                              <span class="list-icon-container"><img class="list-icon" src="/images/calendar/month.png" /></span>
+                              <span class="list-name">This month</span>
+                              <span class="list-taskcount"></span></a>
+                          </li>
+                          <li role="menuitem" class="list-items-li display-none">
+                            <a class="list-items" href="#lists/dateless" tabindex="8" id="datelessTaskFilter">
+                              <span class="list-icon-container"><img class="list-icon" src="/images/calendar/nodate.png" /></span>
+                              <span class="list-name">No due date</span>
+                              <span class="list-taskcount"></span></a>
+                          </li>
+                        </ul>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <hr>
+              <div id="list-collect" class="list-collect">
+                <ul id="myList-ul">
+                  <% var len=list.length;
+                for (let i=0; i < len; i++) { %>
+                  <li role="menuitem" class="list-items-li">
+                    <a class="list-items" href="#lists/<%= list[i].id %>" tabindex="<%= i+15 %>" id="listItem<%= i+15 %>">
+                      <span class="list-icon-container"><img class="list-icon" src="/images/listItem.png" /></span>
+                      <span class="list-name">
+                        <%= list[i].listname %></span>
+                      <span class="list-taskcount"></span>
+                      <span class="list-options" title="List options" style="visibility:hidden"></span>
+                    </a>
+                  </li>
+                  <% } %>
+                </ul>
+              </div>
+             </div>
+              <div id="newList-toolbar" class="newItem-toolbar">
+                <span class="newItem-icon-container"></span>
+                <text class="newItem-text">Add new List</text>
+            </div>
+          </div>
+
+      </section>
+      <section id="contentside" class="contentside">
+        <div id="taskNav">
+          <ul id="taskViewMode">
+            <li id="standardViewTab" class="activeTaskTab">Standard View</li>
+            <!--<li id="calendarViewTab">Calendar View</li>-->
+          </ul>
+        </div>
+        <div id="taskContent">
+          <div id="standardView">
+            <div id="standardView-wrapper">
+              <div id="taskContetside">
+                <div id="taskContetside-header">
+                  <h1 id="selectedList-name"></h1>
+                  <div id="priorityfilter-wrapper">
+                    <div>
+                      <span class="drop-icon-container"><img id="filterdrop-icon" src="/images/downArrow2.png" /></span>
+                      <span class="list-name">Filter priorities</span>
+                    </div>
+                    <div id="priorityFilter-container" class="display-none">
+                      <ul id="filter-priority-ul">
+                        <li role="menuitem" class="list-items-li display-none">
+                          <a class="list-items" href="#lists/critical" tabindex="9" id="critTaskFilter">
+                            <span class="list-icon-container"><img class="priority-icon" src="/images/priority/crit.png" /></span>
+                            <span class="list-name priority4">Critical importance</span>
+                            <span class="list-taskcount priority-taskcount"></span>
+                          </a>
+                        </li>
+                        <li role="menuitem" class="list-items-li display-none">
+                          <a class="list-items" href="#lists/high" tabindex="10" id="highTaskFilter">
+                            <span class="list-icon-container"><img class="priority-icon" src="/images/priority/hig.png" /></span>
+                            <span class="list-name priority3">High importance</span>
+                            <span class="list-taskcount priority-taskcount"></span>
+                          </a>
+                        </li>
+                        <li role="menuitem" class="list-items-li display-none">
+                          <a class="list-items" href="#lists/medium" tabindex="11" id="medTaskFilter">
+                            <span class="list-icon-container"><img class="priority-icon" src="/images/priority/med.png" /></span>
+                            <span class="list-name priority2">Medium importance</span>
+                            <span class="list-taskcount priority-taskcount"></span>
+                          </a>
+                        </li>
+                        <li role="menuitem" class="list-items-li display-none">
+                          <a class="list-items" href="#lists/low" tabindex="12" id="lowTaskFilter">
+                            <span class="list-icon-container"><img class="priority-icon" src="/images/priority/lw.png" /></span>
+                            <span class="list-name priority1">Low signinficance</span>
+                            <span class="list-taskcount priority-taskcount"></span>
+                          </a>
+                        </li>
+                        <li role="menuitem" class="list-items-li display-none">
+                          <a class="list-items" href="#lists/none" tabindex="13" id="noneTaskFilter">
+                            <span class="list-icon-container"><img class="priority-icon" src="/images/priority/no.png" /></span>
+                            <span class="list-name">No relevance</span>
+                            <span class="list-taskcount priority-taskcount"></span>
+                          </a>
+                        </li>
+                        <li role="menuitem" class="list-items-li">
+                          <a class="list-items" href="#lists/none" tabindex="14" id="clearTaskFilter">
+                            <!--   <span class="list-icon-container"><img class="priority-icon" src="/images/priority/no.png" /></span>-->
+                            <span class="list-name">Clear all filters</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div id="task-collection">
+                  <ul id="myTask-ul">
+                    <% const taskLen=task.length;
+                    let dateNumber;
+                    for (let i=0; i < taskLen; i++) {
+                    dateNumber=task[i].deadline;
+                    if (dateNumber==0){
+                      dateNumber=task[i].reminderDate;
+                    }
+                 %>
+                    <li class="task-items-li">
+                      <a class="task-items" tabindex="<%= i+100 %>" id="taskItem<%= i %>">
+                        <input type="checkbox" class="taskCheckBox" id="taskCheckBox<%= i %>">
+                        <% if (task[i].finished>0){ %>
+                        <script>
+                          $("#taskCheckBox<%= i %>").prop("checked",true);
+                         </script>
+                        <%}%>
+                        <span class="task-name priority<%= task[i].priority %>">
+                          <%= task[i].taskname %></span>
+                        <span class="task-datetime"></span>
+                        <span class="task-options" title="List options" style="visibility:hidden"></span>
+                        <input type="hidden" class="task-datetime-holder" value="<%= dateNumber %>">
+                        <input type="hidden" class="taskId" value="<%= task[i].id %>">
+                        <input type="hidden" class="taskListId" value="<%= task[i].listId %>">
+                        <input type="hidden" class="priority" value="<%= task[i].priority %>">
+                      </a>
+                    </li>
+                    <% } %>
+                  </ul>
+                </div>
+                <div id="finishedTask-container">
+
+                </div>
+              </div>
+              <div id="newTask-toolbar" class="newItem-toolbar">
+                <div class="newItem-icon-container"></div>
+                <text class="newItem-text" style="button">Add new Task</text>
+              </div>
+            </div>
+          </div>
+
+          <!--<div id="calendarView" class="display-none">
+            <div id="calendarHeader">
+              <input type="button" name="lastWeek" value="<">
+              <div id="calendarTime">
+                <p id="calendarMonth"></p>
+                <p id="calendarYear"></p>
+              </div>
+              <div id="calendarOptions"></div>
+              <input type="button" name="nextWeek" value=">">
+            </div>
+          </div>-->
+        </div>
+
+      </section>
+      <div id="newList-popup-container" class="list-popup-container display-none">
+        <h3> Add new List</h3>
+        <form action="/lists/create" method="POST" class="addlist-form" id="addList-form">
+          <!--  <input style="visibility:hidden" type="text" name="userID" id="userID" value="<%= user.id %>">-->
+          <input type="text" name="listName" placeholder="New List Name" class="newItemName-input" id="newListName" required>
+          <div class="add-cancel-buttons">
+            <button id="add-newlist" class="newlist-button accept-button" type="submit">Save</button>
+            <button id="cancel-newlist" class="newlist-button cancel-button" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <div id="changeList-popup-container" class="list-popup-container display-none">
+        <h3> Change or delete List</h3>
+        <form action="/lists/update" method="POST" class="addlist-form" id="updateList-form">
+          <input style="visibility:hidden" type="text" name="listId" id="changelistId">
+          <input type="text" name="listName" placeholder="Edit List Name" class="newItemName-input" id="editListName" required>
+          <div id="change-cancel-buttons">
+            <button id="changeList" class="newlist-button accept-button" type="submit">Save</button>
+            <button id="cancel-changeList" class="newlist-button cancel-button" type="button">Cancel</button>
+          </div>
+        </form>
+        <div class="or-separator"></div>
+        <div id="deleteList-div">
+          <div id="deleteList">
+            <span class="delete-icon-container"><img class="delete-icon" src="/images/delete.png" /></span>
+            <span class="delete-list-name">Delete list</span>
+          </div>
+          <div id="confirmDeleteList-container" class="display-none">
+            <p>Are you sure to delete this list?</p>
+            <p>All connected tasks will be also deleted permanenty!</p>
+            <p>This action can't be undone!</p>
+            <div id="deletePermButtons">
+              <span class="confirmButtons" id="no-confirmDeleteList">No</span>
+              <span class="confirmButtons" id="yes-confirmDeleteList">Yes! Delete it!</span>
+            </div>
+          </div>
+          <!--  <button id="deleteList" class="newlist-button delete-button" type="button">Delete List</button>-->
+        </div>
+      </div>
+
+
+      <div id="newTask-popup-container" class="newTask-popup-container display-none">
+        <h3> Add new Task</h3>
+        <form action="/tasks/create" method="POST" id="addTask-form">
+          <!--  <input style="visibility:hidden" type="text" name="userID" id="userID" value="<%= user.id %>">-->
+          <input type="text" id="taskName" name="taskname" placeholder="Enter Task Name" class="newItemName-input" required>
+          <input type="hidden" id="taskListIdForm" name="listId" value="">
+          <div id="taskParam">
+            <div id="date-req-container">
+              <div id="task-dateType">
+                <ul id="task-dateTypeView">
+                  <li id="deadlineViewTab" class="activeTaskTimeTab">Deadline</li>
+                  <li id="reminderViewTab">Reminder</li>
+                </ul>
+              </div>
+              <fieldset id="task-deadline" class="pickDateBorder">
+                <input type="text" placeholder="Pick a date" id="deadline-date" name="deadline" class="datepicker" autocomplete="off" />
+                <select id="requirrence" name="requirrence" class="datepicker">
+                  <option value="" selected disabled>Requirrence</option>
+                  <option value="0">None</option>
+                  <option value="1">Daily</option>
+                  <option value="2">Weekly</option>
+                  <option value="3">Monthly</option>
+                  <option value="4">Yearly</option>
+                </select>
+              </fieldset>
+              <fieldset id="task-reminder" class="pickDateBorder display-none" disabled>
+                <input type="text" placeholder="Pick a date" id="reminder-date" name="reminderDate" class="datepicker" autocomplete="off" />
+              </fieldset>
+
+            </div>
+            <fieldset id="task-priority">
+              <legend>Priority</legend>
+              <div>
+                <input id="criticalPriority" type="radio" name="priority" value="4">
+                <label for="criticalPriority" id="critPriLab">Critical</label>
+              </div>
+              <div>
+                <input id="highPriority" type="radio" name="priority" value="3">
+                <label for="highPriority" id="highPriLab">High</label>
+              </div>
+              <div>
+                <input id="mediumPriority" type="radio" name="priority" value="2">
+                <label for="mediumPriority" id="medPriLab">Medium</label>
+              </div>
+              <div>
+                <input id="lowPriority" type="radio" name="priority" value="1">
+                <label for="lowPriority" id="lowPriLab">Low</label>
+              </div>
+              <div>
+                <input id="noPriority" type="radio" name="priority" value="0" checked>
+                <label for="noPriority" id="noPriLab">None</label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="add-cancel-buttons">
+            <button id="add-newTask" class="newlist-button accept-button" type="submit">Save</button>
+            <button id="cancel-newTask" class="newlist-button cancel-button" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
